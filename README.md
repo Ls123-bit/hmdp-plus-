@@ -1,6 +1,6 @@
 
 
-
+#项目名称：hmdp-plus-/慧生活
 #郑重说明：项目的好多设计亮点请移步 Gitee 阿星不是程序员  https://gitee.com/shining-stars-l  本项目只是一个二次开发的demo 
 
 # 黑马点评-plus（hmdp-plus）
