@@ -1,0 +1,82 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: hmdp-plus
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere.yaml
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    servlet:
+      load-on-startup: 1
+  jackson:
+    default-property-inclusion: non_null # JSON处理时忽略非空字段
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    generator:
+      WRITE_NUMBERS_AS_STRINGS: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+    consumer:
+      #默认的消费组ID
+      group-id: create_voucher_order
+      #是否自动提交offset
+      enable-auto-commit: false
+      # 当kafka中没有初始offset或offset超出范围时将自动重置offset
+      # earliest:重置为分区中最小的offset;
+      # latest:重置为分区中最新的offset(消费分区中新产生的数据);
+      # none:只要有一个分区不存在已提交的offset,就抛出异常;
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: manual_immediate
+mybatis-plus:
+  type-aliases-package: org.javaup.entity # 别名扫描包
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    local-cache-scope: statement
+logging:
+  level:
+    org.javaup: info
+    AUDIT: INFO
+  pattern:
+    dateformat: mm:ss.SSS
+bloom-filter:
+  filters:
+    shop:
+      name: shop-id-bloom
+      expected-insertions: 50000
+      false-probability: 0.01
+    voucher:
+      name: voucher-id-bloom
+      expected-insertions: 100000
+      false-probability: 0.01
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,health,info"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
